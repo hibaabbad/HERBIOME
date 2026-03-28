@@ -3,26 +3,17 @@ import cv2
 import json
 import requests
 import time
-import pandas as pd
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 import numpy as np
 import torch
 from PIL import Image
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 from sklearn.cluster import DBSCAN
 from ultralytics import YOLO
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.lib import colors
-import traceback
-import glob
-from tqdm import tqdm
 import logging
 import uuid
 import tempfile
+from huggingface_hub import hf_hub_download
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -180,7 +171,9 @@ class HerbariumProcessor:
     def __init__(self, yolo_model_path: str, trocr_model_path: str, openai_api_key: str, 
                  device: str = 'cuda' if torch.cuda.is_available() else 'cpu'):
         self.device = device
-        self.yolo_model = YOLO(yolo_model_path)
+        weights_path = hf_hub_download(repo_id=yolo_model_path,
+        filename="sheet-component.pt")
+        self.yolo_model = YOLO(weights_path)
         self.trocr_processor = None
         self.trocr_model = None
         self.openai_client = OpenAIClient(openai_api_key)
@@ -207,7 +200,7 @@ class HerbariumProcessor:
         """Load TrOCR model for text recognition"""
         try:
             logger.info(f"Loading TrOCR model from {model_path}...")
-            self.trocr_processor = TrOCRProcessor.from_pretrained("agomberto/trocr-large-handwritten-fr")
+            self.trocr_processor = TrOCRProcessor.from_pretrained(model_path)
             self.trocr_model = VisionEncoderDecoderModel.from_pretrained(model_path)
             self.trocr_model.to(self.device)
             self.trocr_model.eval()
@@ -215,7 +208,6 @@ class HerbariumProcessor:
         except Exception as e:
             logger.error(f"Error loading TrOCR model: {e}")
             raise
-    
     def detect_components(self, img_path: str, confidence_threshold: float = 0.7) -> Tuple[np.ndarray, List[Dict]]:
         """Detect herbarium sheet components using YOLO with confidence filtering"""
         img = cv2.imread(img_path)
@@ -639,18 +631,19 @@ class HerbariumPipeline:
         return self.processor.process_single_image(img_path)
     
     def validate_config(self) -> Dict[str, bool]:
-        """Validate that all required models and API keys are accessible"""
         validation_results = {}
-        
+
         # Check YOLO model
         try:
-            validation_results['yolo_model'] = os.path.exists(self.config['yolo_model_path'])
+            from huggingface_hub import repo_exists
+            validation_results['yolo_model'] = repo_exists(self.config['yolo_model_path'])
         except:
             validation_results['yolo_model'] = False
-        
+
         # Check TrOCR model
         try:
-            validation_results['trocr_model'] = os.path.exists(self.config['trocr_model_path'])
+            from huggingface_hub import repo_exists
+            validation_results['trocr_model'] = repo_exists(self.config['trocr_model_path'])
         except:
             validation_results['trocr_model'] = False
         

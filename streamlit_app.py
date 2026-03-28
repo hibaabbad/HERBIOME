@@ -81,8 +81,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # API Configuration (hidden from user)
-API_BASE_URL = "http://0.0.0.0:8001"  # Hardcoded, not shown in UI
-
+API_BASE_URL = "http://localhost:8001"  
 def check_api_health():
     """Check if API is running"""
     try:
@@ -139,19 +138,18 @@ def main():
     
     # Sidebar
     try:
-        logo = Image.open("/home/habbad/scratch/project/assets/logo.png")  # Update this path
+        logo = Image.open("assets/logo.png")  
         st.sidebar.image(logo, width=200)
     except:
         pass
     st.sidebar.title("Settings")
     
-    # API Health Check - only show status
+    # API Health Check 
     st.sidebar.subheader("API Status")
     is_healthy, health_info = check_api_health()
     
     if is_healthy:
         st.sidebar.success("✅ API Connected")
-        # Only show the status from the health response
         if "status" in health_info:
             st.sidebar.info(f"Status: {health_info['status']}")
     else:
@@ -261,7 +259,7 @@ def main():
                                     st.metric("Collection Date", structured_data.get("collect_date_collect_date", "Not found"))
                                     st.metric("Collector", structured_data.get("collector_collector", "Not found"))
                                 
-                                # Note: rest_of_text is removed as requested
+                                
                             
                             # Component analysis
                             components = data.get("json_data", {}).get("components", [])

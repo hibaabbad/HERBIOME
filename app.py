@@ -7,7 +7,6 @@ import shutil
 import os
 import tempfile
 import logging
-from typing import Dict, Any
 from src.pipeline import HerbariumPipeline
 from src.utils import (
     allowed_file, 
@@ -41,13 +40,12 @@ app.add_middleware(
 
 # Global pipeline instance
 pipeline = None
-
+    
 def get_config():
-    """Get configuration from environment variables"""
     return {
-        "yolo_model_path": os.getenv("YOLO_MODEL_PATH", "models/yolo_model.pt"),
-        "trocr_model_path": os.getenv("TROCR_MODEL_PATH", "models/trocr_model"),
-        "openai_api_key": os.getenv("OPENAI_API_KEY", "your-api-key-here"), 
+        "yolo_model_path": os.getenv("YOLO_MODEL_PATH", "yeppeuda13/Yolo-hespi"),
+        "trocr_model_path": os.getenv("TROCR_MODEL_PATH", "yeppeuda13/TrOCR_Herbiome"),
+        "openai_api_key": os.getenv("OPENAI_API_KEY", "your-api-key-here"),
         "device": os.getenv("DEVICE", "cpu")
     }
 
@@ -287,4 +285,4 @@ async def get_supported_formats():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="localhost", port=8001)
