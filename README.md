@@ -14,6 +14,10 @@
 
 HERBIOME is an end-to-end pipeline that processes scanned herbarium specimen images and returns structured botanical metadata. It combines computer vision, OCR, and large language models to automate the digitization of herbarium collections, with a focus on European and French herbaria.
 
+<p align="center">
+  <img src="assets/pipe.jpg" alt="HERBIOME Pipeline" width="800"/>
+</p>
+
 The pipeline performs five sequential steps:
 
 1. **Component Detection** — YOLO model locates labels on the herbarium sheet (handwritten data, institutional labels, annotation labels)
