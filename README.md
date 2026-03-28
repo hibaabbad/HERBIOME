@@ -1,5 +1,9 @@
 # 🌿 HERBIOME
 
+<p align="center">
+  <img src="assets/logo.png" alt="HERBIOME Logo" width="200"/>
+</p>
+
 **H**erbiers · **E**tiquettes · **R**econnaissance · **B**otanique · **I**mages · **O**ptimisation · **M**ultimodale · **E**tudes
 
 > An AI-powered pipeline for automated detection, reading, and structured extraction of label information from European and French herbarium sheets.
